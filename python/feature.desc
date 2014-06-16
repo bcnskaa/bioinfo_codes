@@ -1,0 +1,80 @@
+# Feature descriptor
+feature_table_name=
+feature_break_size=
+feature_table_ofn=
+feature_table_format=STRING:[csv|txt|json]
+feature_sort=
+
+
+feature_name=STRING:ANY
+feature_ifn=STRING:ANY
+feature_type=STRING:[point|range|intensity|sequence|mapper]
+feature_format=STRING:[fasta|csv|db|url|txt|json|...]
+
+
+# Typical feature processing routine:
+#	1. Read in a feature defined in the feature definition data
+#	2. filter the feature data based on criteria0 specified by the definition, 
+#	3. 
+
+
+sequence:
+	feature_name=STRING:ANY
+	feature_desc=STRING:ANY
+	feature_ifn=STRING:ANY
+	feature_type=sequence
+	feature_format=fasta
+	feature_subclass=STRING:[ANY*]
+
+
+point:
+	feature_name=STRING:ANY
+	feature_desc=STRING:ANY
+	feature_ifn=STRING:ANY
+	feature_type=point
+	feature_format=csv
+	feature_header=True|T|False|F
+	# For point feature
+	feature_header_label=STRING:ANY
+	feature_header_idx=INTEGER:[0...n]
+	feature_filter=True|T|False|F
+	feature_filter_label=STRING:ANY
+	feature_filter_label_idx=INTEGER:[0...n]
+	feature_filter_value=STRING:ANY
+	# Indicate if the filter value should be treated as regular expression
+	feature_filter_value_fixed=True|T|False|F
+	
+	feature_mapper=STRING:ANY
+
+
+range:
+	feature_name=STRING:ANY
+	feature_desc=STRING:ANY
+	feature_ifn=STRING:ANY
+	feature_type=range
+	feature_format=csv
+	feature_header=True|T|False|F
+	feature_header_start_label=STRING:ANY
+	feature_header_start_idx=INTEGER:[0...n]
+	feature_header_end_label=STRING:ANY
+	feature_header_end_idx=INTEGER:[0...n]
+	
+	feature_filter=True|T|False|F
+	feature_filter_label=STRING:ANY,...
+	feature_filter_label_idx=INTEGER:[0...n],...
+	feature_filter_value=STRING:ANY,...
+	
+	feature_mapper=STRING:ANY
+	
+
+mapper:
+	feature_name=STRING:ANY
+	feature_desc=STRING:ANY
+	feature_ifn=STRING:ANY
+	feature_type=mapper
+	feature_format=csv
+	feature_header=True|T|False|F
+	feature_header_start_label=STRING:ANY
+	feature_header_start_idx=INTEGER:[0...n]
+	feature_header_end_label=STRING:ANY
+	feature_header_end_idx=INTEGER:[0...n]
