@@ -35,8 +35,6 @@ import traceback
 import math
 
 
-
-
 def extract_snp_by_chrom(fn_in, fn_out, chr_id):
     line_n = 0
     export_n = 0
