@@ -55,4 +55,4 @@ def extract_snp_by_chrom(fn_in, fn_out, chr_id):
             line_n += 1
     print("Number of SNP exported: ", export_n)
     
-    retu
+    return export_n
