@@ -165,7 +165,8 @@ void deinitialize_precalculated_values()
 
 /**
  * Create an empty pattern table. 
- * The size of a table is calculated by the equation: HASH_VALUE_RANK ^ pattern_len.
+ * The size of a table is calculated by this equation: 
+ *     Hash_size = HASH_VALUE_RANK ^ pattern_len.
  *
  */
 PATTERN_TABLE* create_pattern_table(pattern_len)
@@ -279,7 +280,7 @@ PATTERN_TABLE* generate_pattern_profile(seq, seq_len, pattern_len, overlapping_l
 	checkpoints = (int*)calloc(table->pattern_n, sizeof(int));
 	memset(checkpoints, 0, table->pattern_n);
 
-	// Go through the pattern table and allocate the memory for the patten_len_vals
+	// Go through the pattern table and allocate the memory for patten_len_vals
 	for(i = 0; i < table->pattern_n; i+= step)
 	{
 		if(table->pattern_val_lens[i] > 0)
@@ -290,7 +291,7 @@ PATTERN_TABLE* generate_pattern_profile(seq, seq_len, pattern_len, overlapping_l
 	}
 
 
-	// Assign the hash index into pattern_vals from seq_profile
+	// Extract values from seq_profile, and Assign hash indice into pattern_vals
 	for(i = 0; i < seq_len; i++)
 	{
 		hash_idx = seq_profile[i];
@@ -302,11 +303,9 @@ PATTERN_TABLE* generate_pattern_profile(seq, seq_len, pattern_len, overlapping_l
 		}
 	}
 
-
 	// Clean up
 	free(seq_profile); seq_profile = 0;
 	free(checkpoints); checkpoints = 0;
-
 
 	return table;
 }
