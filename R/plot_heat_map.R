@@ -265,23 +265,6 @@ plot_heatmap_with_group_info <- function(plot_data, xlabel_meta_info=data.frame(
 	
 	
 	# http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
-#	g <- ggplot(data=plot_data) + geom_tile(data=plot_data, aes(x=0, y=Y, fill=group, height=1, width=1.0)) + 
-#			scale_fill_manual(values=c("red", "blue", "green", "orange", "darkblue")) +
-#			geom_segment(data=separators, aes(xend=x+2, x=x, y=y, yend=y), size=1, color="white") +
-#			theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background=element_blank(), axis.text.x=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), axis.ticks.x=element_blank(), axis.ticks.y=element_blank());
-	
-
-	# y group label
-	#g <- ggplot(data=ygrouplabels) + geom_tile(data=ygrouplabels, aes(x=X, y=Y, fill=GROUP, height=1, width=1.0)) + 
-	#		scale_fill_manual(values=y_label_group_colors) +
-	#		geom_segment(data=yseparators, aes(xend=X+2, x=X, y=Y, yend=Y), size=1, color="white") +
-	#		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background=element_blank(), axis.text.x=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), axis.ticks.x=element_blank(), axis.ticks.y=element_blank());
-	#theme();
-	#group_legend <- g_legend(g)
-	
-	#g <- g + theme(legend.position="none");
-	
-
 
 	# y group label
 	yg <- ggplot(data=ygrouplabels) + geom_tile(data=ygrouplabels, aes(x=X, y=Y, fill=GROUP, height=1.2, width=0.3)) + 
@@ -327,13 +310,6 @@ plot_heatmap_with_group_info <- function(plot_data, xlabel_meta_info=data.frame(
 		g_main <- g_main + geom_text(aes(x=X,y=Y,label=Z), size=3, data=plot_data);
 	}
 	
-	
-	
-#	if(length(plot_title) != 0)
-#	{
-#		#g_main <- g_main + ggtitle(plot_title)
-#		g_main <- g_main + ggtitle(plot_title); 
-#	}
 
 
 	# top, right, bottom, and left
@@ -350,11 +326,6 @@ plot_heatmap_with_group_info <- function(plot_data, xlabel_meta_info=data.frame(
 	
 	
 	# http://stackoverflow.com/questions/12539348/ggplot-separate-legend-and-plot
-	#grid.arrange(g + theme(legend.position = 'none') + labs(x=NULL), g_main + labs(x=NULL, y=NULL) + theme(axis.text=element_blank(), legend.position="none"), legend, ncol=3, widths=c(1/11, 9/11, 1/11))
-	#grid.arrange(yg + theme(legend.position = 'none') + labs(x=NULL), g_main + labs(x=NULL, y=NULL) + theme(axis.text=element_blank(), legend.position="none"), legend, ncol=3, widths=c(1/11, 9/11, 1/11))
-	#grid.arrange(yg + theme(legend.position = 'none') + labs(x=NULL), g_main + labs(x=NULL, y=NULL) + theme(axis.text=element_blank(), legend.position="none"), legend, nrow=3, ncol=3, widths=c(1/11, 9/11, 1/11))
-	
-	
 
 	print("Plotting graph...");
 	if(length(pdf_fn) != 0)
@@ -388,16 +359,7 @@ plot_heatmap_with_group_info <- function(plot_data, xlabel_meta_info=data.frame(
 		#grid.text(plot_title, x=-5, y=1.05, vp=vplayout(1,1:12)); 
 	}
 	
-	#grid.draw(ygroup_legend)
-	
 
-	
-	#print(ygroup_legend, vp=vplayout(1:7,12))
-	#print(main_legend, vp=vplayout(8:11,12))
-	#g_legends <- arrangeGrob(ygroup_legend, legend, widths=c(1/2,1/2), nrow=2)
-	
-
-	
 	
 
 #	# http://stackoverflow.com/questions/8112208/how-can-i-obtain-an-unbalanced-grid-of-ggplots
@@ -417,23 +379,6 @@ plot_heatmap_with_group_info <- function(plot_data, xlabel_meta_info=data.frame(
 #	
 	
 
-#p = rectGrob()
-#
-## Top
-#g_top <- arrangeGrob(p,p,p, widths=c(1/12, 10/12, 1/12), nrow=1)
-## Legends
-#g_legends <- arrangeGrob(ygroup_legend, legend, widths=c(1/2,1/2), nrow=2)
-## Center
-#g_center <- arrangeGrob(yg,g_main,g_legends, widths=c(2/12, 10/12, 1/12), nrow=1)
-## Bottom
-#g_bottom <- arrangeGrob(p,xg,p, widths=c(1/12, 10/12, 1/12), nrow=1)
-#
-## Plot
-#grid.arrange(g_top, g_center, g_bottom, nrow=3, heights=c(1/12,10/12,1/12))
-#
-
-
-
 
 	if(length(pdf_fn) != 0)
 	{
@@ -442,11 +387,6 @@ plot_heatmap_with_group_info <- function(plot_data, xlabel_meta_info=data.frame(
 	}
 
 }
-
-
-
-
-
 
 
 
@@ -590,13 +530,7 @@ plot_heatmap_with_double_y <- function(plot_data, xylabel_meta_info=data.frame()
 	}
 	
 	
-	
-#	if(length(plot_title) != 0)
-#	{
-#		#g_main <- g_main + ggtitle(plot_title)
-#		g_main <- g_main + ggtitle(plot_title); 
-#	}
-	
+
 	
 	# top, right, bottom, and left
 	#theme(plot.margin=unit(c(0.5,0.1,0.1,0.1), "cm"));
@@ -692,105 +626,7 @@ plot_heatmap <- function(plot_data, xlabel_meta_info=data.frame(), ylabel_meta_i
 		plot_data$Y <- factor(plot_data$Y, levels=as.character(ylabel_meta_info$LABEL), ordered=T)
 	}
 	
-	
-#
-#	# A plot
-#	#labels <- paste("Feature_", seq(1,25), sep="")
-#	#groups <- paste("Group", sample(c(1,2,3,4), length(labels), replace=T), sep="")
-#	#x <- rep(1, length(labels));
-#	#y <- seq(1, length(labels));
-#	#plot_data <- data.frame(x=x, y=y, label=labels, group=groups, stringsAsFactors=F);
-#	
-#	
-#	xseparators <- data.frame(X=integer(0), Y=integer(0));
-#	xgrouplabels <- data.frame(X=integer(0), Y=integer(0), GROUP=character(0));
-#	yseparators <- data.frame(X=integer(0), Y=integer(0));
-#	ygrouplabels <- data.frame(X=integer(0), Y=integer(0), GROUP=character(0));
-#	
-#	
-#	# The basic rule with ggplot2 that applies to almost anything that you want in a specific order is: If you want something to appear in a particular order, you must make the corresponding variable a factor, with the levels sorted in your desired order.
-#	# Prepare group label for x-axis labels
-#	if(dim(xlabel_meta_info)[1] != 0)
-#	{
-#		plot_data$X <- factor(plot_data$X, levels=xlabel_meta_info$LABEL, ordered=T);
-#		
-#		labels <- xlabel_meta_info$LABEL
-#		groups <- xlabel_meta_info$GROUP
-#		
-#		# Generate separators for group labels
-#		separators = data.frame(X=integer(0), Y=integer(0))
-#		for(i in 1 : (length(groups) - 1))
-#		{
-#			g1 <- groups[i]
-#			g2 <- groups[i+1]
-#			
-#			if(g1 != g2)
-#			{
-#				# add a separator
-#				xseparators <- rbind(xseparators, data.frame(X=-0.5, Y=i+0.5))
-#			}
-#		}
-#		
-#		xgrouplabels <- data.frame(X=0, Y=xlabel_meta_info$LABEL, GROUP=xlabel_meta_info$GROUP);
-#	}
-#	
-#	
-#	# Prepare group label for y-axis labels
-#	if(dim(ylabel_meta_info)[1] != 0)
-#	{
-#		plot_data$Y <- factor(plot_data$Y, levels=ylabel_meta_info$LABEL, ordered=T);
-#		
-#		labels <- ylabel_meta_info$LABEL
-#		groups <- ylabel_meta_info$GROUP
-#		
-#		# Generate separators for group labels
-#		separators = data.frame(X=integer(0), Y=integer(0))
-#		for(i in 1 : (length(groups) - 1))
-#		{
-#			g1 <- groups[i]
-#			g2 <- groups[i+1]
-#			
-#			if(g1 != g2)
-#			{
-#				# add a separator
-#				yseparators <- rbind(yseparators, data.frame(X=-0.5, Y=i+0.5))
-#			}
-#		}
-#		
-#		ygrouplabels <- data.frame(X=0, Y=ylabel_meta_info$LABEL, GROUP=ylabel_meta_info$GROUP);
-#		
-#		# Colors for y label groups
-#		y_label_group_colors <- SELECTED_COLOR_SET2[1:length(unique(as.character(ygrouplabels$GROUP)))]
-#	}
-#	
-#	
-#	
-#	# http://www.cookbook-r.com/Graphs/Colors_(ggplot2)/
-##	g <- ggplot(data=plot_data) + geom_tile(data=plot_data, aes(x=0, y=Y, fill=group, height=1, width=1.0)) + 
-##			scale_fill_manual(values=c("red", "blue", "green", "orange", "darkblue")) +
-##			geom_segment(data=separators, aes(xend=x+2, x=x, y=y, yend=y), size=1, color="white") +
-##			theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background=element_blank(), axis.text.x=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), axis.ticks.x=element_blank(), axis.ticks.y=element_blank());
-#	
-#	
-#	# y group label
-#	#g <- ggplot(data=ygrouplabels) + geom_tile(data=ygrouplabels, aes(x=X, y=Y, fill=GROUP, height=1, width=1.0)) + 
-#	#		scale_fill_manual(values=y_label_group_colors) +
-#	#		geom_segment(data=yseparators, aes(xend=X+2, x=X, y=Y, yend=Y), size=1, color="white") +
-#	#		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background=element_blank(), axis.text.x=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), axis.ticks.x=element_blank(), axis.ticks.y=element_blank());
-#	#theme();
-#	#group_legend <- g_legend(g)
-#	
-#	#g <- g + theme(legend.position="none");
-#	
-#	# y group label
-##g <- ggplot(data=ygrouplabels) + geom_tile(data=ygrouplabels, aes(x=X, y=Y, fill=GROUP, height=1, width=1.0)) + 
-##		scale_fill_manual(values=y_label_group_colors) +
-##		geom_segment(data=yseparators, aes(xend=X+2, x=X, y=Y, yend=Y), size=1, color="white") +
-##		theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background=element_blank(), axis.text.x=element_blank(), axis.title.x=element_blank(), axis.title.y=element_blank(), axis.ticks.x=element_blank(), axis.ticks.y=element_blank());
-##theme();
-##group_legend <- g_legend(g)
-#	
-#	
+
 	if(length(pdf_fn) != 0)
 	{
 		pdf(pdf_fn, width=pdf_width,height=pdf_height);
@@ -833,18 +669,8 @@ plot_heatmap <- function(plot_data, xlabel_meta_info=data.frame(), ylabel_meta_i
 		system(paste("convert", pdf_fn, sub(".pdf", ".png", pdf_fn)));
 	}
 	
-	# top, right, bottom, and left
-	#theme(plot.margin=unit(c(0.5,0.1,0.1,0.1), "cm"));
-	
-	# legend.position="none",
-	#legend <- g_legend(g_main)
-	
-	
-	
 	# http://stackoverflow.com/questions/12539348/ggplot-separate-legend-and-plot
 	#grid.arrange(g + theme(legend.position = 'none'), g_main + theme(axis.text=element_blank(), legend.position="none"), legend, ncol=3, nrow=2, widths=c(2/11, 7/11, 2/11))
-	
-	
 }
 
 
