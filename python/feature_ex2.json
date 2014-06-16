@@ -1,0 +1,62 @@
+{
+	"feature_table_name":"test_example",
+	"feature_table_break_size":500000,
+	"feature_table_ofn":"test_example_feature_descriptor.json",
+	"feature_table_ofn_format":"json",
+	"feature_sort":"False",
+	"features":[
+		{
+			"feature_name":"chr19",  
+			"feature_desc":"Genomic sequence of Human chromosome 19 (hg19)", 
+			"feature_ifn":"chr19.fa",
+			"feature_type":"sequence", 
+			"feature_ifn_format":"fasta"
+		},{
+			"feature_name":"RMSK",
+			"feature_desc":"RMSK data",
+			"feature_ifn":"rmsk_chr19.txt",
+			"feature_type":"range",
+			"feature_ifn_format":"csv",
+			"feature_header":"true",
+			"feature_header_start_label":"genoStart",
+			"feature_header_end_label":"genoEnd",
+			"feature_filter":"false"
+		},{
+			"feature_name":"RMSK",
+			"feature_desc":"RMSK data",
+			"feature_ifn":"rmsk_chr19.txt",
+			"feature_type":"range",
+			"feature_ifn_format":"csv",
+			"feature_header":"true",
+			"feature_header_start_label":"genoStart",
+			"feature_header_end_label":"genoEnd",
+			"feature_filter":"true",
+			"feature_filter_label":"repName",
+			"feature_filter_value":"AluY*"
+		},{
+			"feature_name":"COSMIC",
+			"feature_desc":"COSMIC data",
+			"feature_ifn":"cosmicRaw.txt2",
+			"feature_type":"range",
+			"feature_ifn_format":"csv",
+			"feature_header":"true",
+			"feature_header_start_label":"grch37_start",
+			"feature_header_end_label":"grch37_stop",
+			"feature_filter":"true",
+			"feature_filter_label":"chromosome,mut_description",
+			"feature_filter_value":"19,\\bDeletion\\b"
+		},{
+			"feature_name":"COSMIC",
+			"feature_desc":"COSMIC data",
+			"feature_ifn":"cosmicRaw.txt2",
+			"feature_type":"range",
+			"feature_ifn_format":"csv",
+			"feature_header":"true",
+			"feature_header_start_label":"grch37_start",
+			"feature_header_end_label":"grch37_stop",
+			"feature_filter":"true",
+			"feature_filter_label":"chromosome,mut_description",
+			"feature_filter_value":"19,\\bInsertion\\b"
+		}		
+	]
+}
