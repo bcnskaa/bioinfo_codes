@@ -33,10 +33,10 @@
 
 #include "SeqTools/fasta_reader.h"
 
-// http://adv-r.had.co.nz/C-interface.html
+
 /**
  * 1. read fasta sequence
- * 2.
+ * 2. 
  *
  * Compilation: R CMD SHLIB process_fasta.c SeqTools/fasta_reader.c
  */
@@ -134,21 +134,6 @@ SEXP process_fasta_r(SEXP fasta_fn, SEXP fasta_header, SEXP char_to_be_counted)
 
 	return poss;
 }
-
-
-//
-//SEXP get_subseqs_r(SEXP fasta_fn, SEXP fasta_header, SEXP ss, SEXP es)
-//{
-//	char *fn, *header;
-//	int spos, epos;
-//
-//	fn = CHAR(STRING_ELT(fasta_fn, 0));
-//	header = CHAR(STRING_ELT(fasta_header, 0));
-//	spos = INTEGER(s);
-//	epos = INTEGER(e);
-//
-//	return(get_subseq(fn, header, spos, epos));
-//}
 
 
 char *get_subseq(char *fasta_fn, char *fasta_header, int spos, int epos)
