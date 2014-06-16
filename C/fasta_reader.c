@@ -177,16 +177,6 @@ SeqObj* read_fasta_by_id(infilename, header_id)
 	            		so->seq_len = 0;
 
 
-//	            		// Preestimate the size of the fasta object
-//	            		filepos = ftell(infile);
-//	            		 while(feof(infile) == 0 && cflag < 2)
-//	            		 {
-//	            			 status = getline(&buffer, &buffer_size, infile);
-//	            			 if(statu)
-//	            		 }
-
-
-
 	            		cflag = 1;
 	            	} else {
 
@@ -205,23 +195,6 @@ SeqObj* read_fasta_by_id(infilename, header_id)
 		    			ptr = so->seq + so->seq_len;
 		    			strncpy(ptr, buffer, len);
 		    			so->seq_len += len;
-
-
-
-		    			/*
-		    			len = status - 1;
-		    			//printf("Len: %d.\n", len);
-		    			//so->seq = (char*)realloc(so->seq, (so->seq_len + strlen(buffer)) * sizeof(char));
-		    			so->seq = (char*)realloc(so->seq, (so->seq_len + len + 1) * sizeof(char));
-		    			ptr = so->seq + so->seq_len;
-		    			//ptr = (char*)strdup(buffer);
-		    			strncpy(ptr, buffer, len);
-		    			*ptr++ = '\0';
-
-		    			//printf("%s: %d.\n", buffer, strlen(buffer));
-		    			//printf("%s.\n", so->seq);
-		    			so->seq_len += len;
-		    			*/
 		    		}
 	            }
 	    	}
@@ -245,51 +218,9 @@ size_t get_sequence_length(infilename, header_id)
 	char *header_id;
 {
 	long int header_pos;
-	//FILE *infile;
-	//size_t seq_len;
 
-
-	//seq_len = 0;
 	header_pos = get_header_pos(infilename, header_id);
 	return get_sequence_length_with_pos(infilename, header_id, header_pos);
-
-
-//	//printf("Header Position=%d.\n", header_pos);
-//	if(header_pos != HEADER_NOT_FOUND)
-//	{
-//		buffer_size = 4096;
-//		buffer = (char*)calloc(buffer_size, sizeof(char));
-//
-//		infile = (FILE*)fopen64(infilename, "r");
-//
-//		// forward fstream to the sequence position
-//		fseek(infile, strlen(header_id) + 2, SEEK_SET);
-//
-//		while(feof(infile) == 0)
-//		{
-//			// read line
-//			byte_read = getline(&buffer, &buffer_size, infile);
-//
-//			if(byte_read > 1)
-//			{
-//				buffer[byte_read - 1] = '\0';
-//
-//				printf("read=%s\n", buffer);
-//
-//				if(buffer[0] == '>') { // New header encounter
-//					break;
-//				} else {
-//					seq_len += byte_read - 1;
-//				}
-//			}
-//		}
-//
-//		// Clean up
-//		free(buffer); buffer = 0;
-//		fclose(infile); infile = 0;
-//	}
-//
-//	return seq_len;
 }
 
 size_t get_sequence_length_with_pos(infilename, header_id, header_pos)
@@ -302,7 +233,6 @@ size_t get_sequence_length_with_pos(infilename, header_id, header_pos)
 
 
 	seq_len = 0;
-	//printf("Header Position=%d.\n", header_pos);
 	if(header_pos != HEADER_NOT_FOUND)
 	{
 		buffer_size = 4096;
@@ -311,7 +241,6 @@ size_t get_sequence_length_with_pos(infilename, header_id, header_pos)
 		infile = (FILE*)fopen64(infilename, "r");
 
 		// forward fstream to the sequence position
-		//fseek(infile, header_pos + strlen(header_id) + 2, SEEK_SET);
 		fseek(infile, header_pos, SEEK_SET);
 
 		while(feof(infile) == 0)
@@ -323,7 +252,6 @@ size_t get_sequence_length_with_pos(infilename, header_id, header_pos)
 			{
 				buffer[byte_read - 1] = '\0';
 
-				//printf("read=%s\n", buffer);
 
 				if(buffer[0] == '>') { // New header encounter
 					break;
@@ -340,54 +268,6 @@ size_t get_sequence_length_with_pos(infilename, header_id, header_pos)
 
 	return seq_len;
 }
-
-
-//
-//
-//int check_if_header_exist(infilename, header_id)
-//	char *infilename;
-//	char *header_id;
-//{
-//	int i;
-//	FILE *infile;
-//	char *ptr;
-//
-//	infile = (FILE*)fopen64(infilename, "r");
-//
-//	cflag = 0;
-//	if(infile != 0)
-//	{
-//		buffer_size = 4096;
-//		buffer = (char*)calloc(buffer_size, sizeof(char));
-//
-//		while(feof(infile) == 0 && cflag < 2)
-//		{
-//			status = getline(&buffer, &buffer_size, infile);
-//
-//			if(status > 1)
-//			{
-//				buffer[status - 1] = '\0'; buffer_size--; // Remove newline character
-//
-//				if(buffer[0] == '>') { // New header encounter
-//
-//					ptr = buffer; ptr++; // exclude '>'
-//
-//					if(strcmp(header_id, ptr) == 0) {
-//						cflag = 3;
-//					}
-//				}
-//			}
-//		}
-//
-//		free(buffer); buffer = 0;
-//		fclose(infile); infile = 0;
-//	}
-//
-//	if(cflag == 3)
-//		return 1;
-//	else
-//		return 0;
-//}
 
 
 long int get_header_pos(infilename, header_id)
@@ -465,8 +345,6 @@ void print_fasta(outfilename, so)
 			}
 
 
-			//printf("Line: %d", line_num);
-
 			// Print header
 			fputc('>', outfile);
 			fputs(so->header, outfile);
@@ -474,29 +352,8 @@ void print_fasta(outfilename, so)
 			for(i = 0; i < so->seq_len; i++)
 			{
 				fputc(so->seq[i], outfile);
-				//if(i != 0 && i % CHAR_PER_LINE == 0)
-				//	fputc('\n', outfile);
 			}
 
-			/*
-			ptr = so->seq;
-			//for(i = 0, char_printed = 0; i < so->seq_len; i++) {
-			for(i = 0, char_printed = 0; i <= line_num; i++) {
-				strncpy(buffer, ptr, CHAR_PER_LINE);
-				fputs(buffer, outfile);
-				fputc('\n', outfile);
-
-				ptr += CHAR_PER_LINE;
-
-//				fputc(so->seq[i], outfile);
-//				if(char_printed == CHAR_PER_LINE) {
-//					char_printed = 0;
-//					fputc('\n', outfile);
-//				} else {
-//					char_printed++;
-//				}
-			}
-*/
 			fclose(outfile); outfile = 0;
 		}
 }
@@ -557,18 +414,7 @@ void display_fasta(so, spos, epos)
 	if((seq = get_subseq_SeqObj(so, spos, epos)) != 0) {
 		printf("%s:%d..%d\n%s", so->header, spos, epos, seq);
 	}
-//	int i;
-//	size_t seq_len;
-//
-//
-//	if(strcmp(header, so->header) == 0)
-//	{
-//		printf("%s:%d..%d\n", header, spos, epos);
-//		for(i = spos - 1; i < epos && i < so->seq_len; i++)
-//		{
-//			printf("%c", so->seq[i]);
-//		}
-//	}
+
 }
 
 
@@ -576,20 +422,13 @@ void display_fasta(so, spos, epos)
 void seq_toupper(so)
 	SeqObj* so;
 {
-	//int seq_n;
 	int i;
 	char c;
-	//char *seq_uc;
-
-	//seq_uc = (char*)calloc(so->seq_len, sizeof(char));
 
 	for(i = 0; i < so->seq_len; i++)
 	{
 		c = so->seq[i];
 		so->seq[i] = toupper(c);
 	}
-
-	//return i;
-	//return seq_uc;
 }
 
