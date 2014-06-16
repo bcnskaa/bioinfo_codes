@@ -1107,12 +1107,3 @@ int main(argc, argv)
 	pthread_exit(NULL);	
 	return 0;
 } 
-
-/*
- *
- ~/share/tools/axel-2.4/axel -n8 ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data/HG02545/sequence_read/ERR184137_1.filt.fastq.gz
- ~/share/tools/axel-2.4/axel -n8 ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data/HG02545/sequence_read/ERR184137_2.filt.fastq.gz
- ls -la
- folder: gpu10.ust.hk/data_local10/1KGP
- *
- */
