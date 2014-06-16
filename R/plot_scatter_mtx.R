@@ -164,10 +164,3 @@ panel.xylm_smooth <-function (x, y, col = par("col"), bg = NA, pch = par("pch"),
 	}
 }
 
-# now use the function for the epi data. (see figure)
-
-#pairs(epi, lower.panel=panel.smooth, upper.panel=panel.cor)
-
-
-#use the same function for yet another graph. 
-#pairs(bfi, lower.panel=panel.smooth, upper.panel=panel.cor)
