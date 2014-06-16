@@ -1,0 +1,14 @@
+{
+	"feature_table_name":"test_example",
+	"feature_break_size":500000,
+	"feature_table_ofn":"test_example_feature_descriptor.json",
+	"feature_table_format":"json",
+	"feature_sort":"False",
+	
+	"features":[
+		{
+			"feature_name":"RMSK",  "feature_desc":"RMSK data", "feature_ifn":"rmsk_chr19.txt", "feature_type":"range", "feature_format":"csv", "feature_header":"true", "feature_header_start_label":"genoStart", "feature_header_end_label":"genoEnd", "feature_filter":"false"
+		}, {
+			"feature_name":"chr19",  "feature_desc":"chromosome 19", "feature_ifn":"chr19.fa", "feature_type":"sequence", "feature_format":"fasta"
+		}]
+}
