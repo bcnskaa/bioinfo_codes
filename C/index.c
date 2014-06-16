@@ -74,28 +74,6 @@ const int HASH_VALUE_ERROR = -1;
 
 
 
-const int THREAD_N = 4;
-pthread_mutex_t lock;
-threadpool_t *pool;
-
-
-void test_thread()
-{
-	pthread_mutex_init(&lock, NULL);
-
-	// Create thread pool
-
-}
-
-
-
-//int PRECALCULATED_BASE_VALUES_SIZE = 20;
-//extern size_t *PRECALCULATED_BASE_VALUES[PRECALCULATED_BASE_VALUES_SIZE];
-
-
-
-
-
 int test_main(argc, argv)
 	int argc;
 	char **argv;
@@ -186,7 +164,8 @@ void deinitialize_precalculated_values()
 }
 
 /**
- * Create a empty pattern table. The size of a table is calculated by the equation: HASH_VALUE_RANK ^ pattern_len.
+ * Create an empty pattern table. 
+ * The size of a table is calculated by the equation: HASH_VALUE_RANK ^ pattern_len.
  *
  */
 PATTERN_TABLE* create_pattern_table(pattern_len)
@@ -226,7 +205,9 @@ PATTERN_TABLE* create_pattern_table(pattern_len)
 }
 
 
-
+/**
+ * 
+ */
 void destroy_pattern_table(table)
 	PATTERN_TABLE* table;
 {
@@ -354,15 +335,6 @@ PATTERN_TABLE* generate_pattern_profile(seq, seq_len, pattern_len, overlapping_l
 
 
 //
-//size_t PRECALCULATED_BASE_VALUES(k)
-//	int k;
-//{
-//	size_t PRECALCULATED_BASE_VALUES[] = {1, HASH_VALUE_RANK, HASH_VALUE_RANK * HASH_VALUE_RANK, HASH_VALUE_RANK * HASH_VALUE_RANK * HASH_VALUE_RANK, HASH_VALUE_RANK * HASH_VALUE_RANK * HASH_VALUE_RANK};
-//
-//	return PRECALCULATED_BASE_VALUES[k];
-//}
-
-//
 int calculate_hash_index_value(word, word_len)
 	char *word;
 	int word_len;
@@ -402,28 +374,6 @@ int calculate_hash_index_value(word, word_len)
 			idx_value += (HASH_VALUE_N * base_val);
 		else
 			return HASH_VALUE_ERROR;
-
-// switch case can't be used when
-//		switch(c)
-//		{
-//		case 'A':
-//			idx_value += (HASH_VALUE_A * (int)pow((double)cardinality, j));
-//			break;
-//		case 'T':
-//			idx_value += (HASH_VALUE_T * (int)pow((double)cardinality, j));
-//			break;
-//		case 'G':
-//			idx_value += (HASH_VALUE_G * (int)pow((double)cardinality, j));
-//			break;
-//		case 'C':
-//			idx_value += (HASH_VALUE_C * (int)pow((double)cardinality, j));
-//			break;
-//		case 'N':
-//			idx_value += (HASH_VALUE_N * (int)pow((double)cardinality, j));
-//			break;
-//		default:
-//			return HASH_VALUE_ERROR;
-//		}
 	}
 
 	return idx_value;
@@ -463,27 +413,6 @@ int calculate_hash_index_value_slow(word, word_len)
 		else
 			return HASH_VALUE_ERROR;
 
-// switch case can't be used when
-//		switch(c)
-//		{
-//		case 'A':
-//			idx_value += (HASH_VALUE_A * (int)pow((double)cardinality, j));
-//			break;
-//		case 'T':
-//			idx_value += (HASH_VALUE_T * (int)pow((double)cardinality, j));
-//			break;
-//		case 'G':
-//			idx_value += (HASH_VALUE_G * (int)pow((double)cardinality, j));
-//			break;
-//		case 'C':
-//			idx_value += (HASH_VALUE_C * (int)pow((double)cardinality, j));
-//			break;
-//		case 'N':
-//			idx_value += (HASH_VALUE_N * (int)pow((double)cardinality, j));
-//			break;
-//		default:
-//			return HASH_VALUE_ERROR;
-//		}
 	}
 
 	return idx_value;
