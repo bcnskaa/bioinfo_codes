@@ -1,4 +1,4 @@
 python_codes
 ============
 
-Python codes for facilitating bioinformatics tasks
+Python codes for simple bioinformatics tasks
