@@ -334,11 +334,6 @@ int calculate_hash_index_value(word, word_len)
 		c = word[i];
 
 		base_val = PRECALCULATED_BASE_VALUES[j];
-		/*
-		base_val = 1;
-		for(k = 0; k < j; k++)
-			base_val *= cardinality;
-		*/
 
 		if(c == HASH_VALUE_A_CHAR)
 			idx_value += (HASH_VALUE_A * base_val);
@@ -357,44 +352,6 @@ int calculate_hash_index_value(word, word_len)
 	return idx_value;
 }
 
-
-
-int calculate_hash_index_value_slow(word, word_len)
-	char *word;
-	int word_len;
-{
-	int len;
-	int i, j;
-	int idx_value;
-	char c;
-	int cardinality;
-
-	//len = strlen(word);
-	len = word_len;
-
-	cardinality = HASH_VALUE_RANK;
-	idx_value = 0;
-	for(i = 0, j = len - 1; i < len; i++, j--)
-	{
-		c = word[i];
-
-		if(c == HASH_VALUE_A_CHAR)
-			idx_value += (HASH_VALUE_A * (int)pow((double)cardinality, j));
-		else if(c == HASH_VALUE_T_CHAR)
-			idx_value += (HASH_VALUE_T * (int)pow((double)cardinality, j));
-		else if(c == HASH_VALUE_G_CHAR)
-			idx_value += (HASH_VALUE_G * (int)pow((double)cardinality, j));
-		else if(c == HASH_VALUE_C_CHAR)
-			idx_value += (HASH_VALUE_C * (int)pow((double)cardinality, j));
-		else if(c == HASH_VALUE_N_CHAR)
-			idx_value += (HASH_VALUE_N * (int)pow((double)cardinality, j));
-		else
-			return HASH_VALUE_ERROR;
-
-	}
-
-	return idx_value;
-}
 
 
 INDEX* create_index(size)
