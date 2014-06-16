@@ -276,11 +276,11 @@ PATTERN_TABLE* generate_pattern_profile(seq, seq_len, pattern_len, overlapping_l
 	}
 
 
-	// checkpoints to store the current pattern_vals position
+	// checkpoints to store the position of current pattern_vals
 	checkpoints = (int*)calloc(table->pattern_n, sizeof(int));
 	memset(checkpoints, 0, table->pattern_n);
 
-	// Go through the pattern table and allocate the memory for patten_len_vals
+	// Go through the pattern table and allocate memory for patten_len_vals
 	for(i = 0; i < table->pattern_n; i+= step)
 	{
 		if(table->pattern_val_lens[i] > 0)
@@ -291,7 +291,7 @@ PATTERN_TABLE* generate_pattern_profile(seq, seq_len, pattern_len, overlapping_l
 	}
 
 
-	// Extract values from seq_profile, and Assign hash indice into pattern_vals
+	// Extract values from seq_profile, and assign hash indice into pattern_vals
 	for(i = 0; i < seq_len; i++)
 	{
 		hash_idx = seq_profile[i];
