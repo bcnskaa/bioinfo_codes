@@ -32,7 +32,6 @@
  *  Created on: Nov 16, 2009
  *      Author: bcnskaa
  */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -40,17 +39,14 @@
 #include <math.h>
 #include <assert.h>
 #include <pthread.h>
-//#include <cstring.h>
 
 #include "index.h"
 #include "threadpool.h"
 
+// gcc -o index index.c -lm
 
 
 const int BUFFER_SIZE = 100;
-
-// gcc -o index index.c -lm
-
 const int DEFAULT_INDEX = -1;
 
 
@@ -96,9 +92,9 @@ int test_main(argc, argv)
 
 	destroy_pattern_table(table); table = 0;
 
-
-
 }
+
+
 
 /**
  * Given a hash index and length of a pattern, this function will return the corresponding pattern
@@ -130,6 +126,7 @@ char* get_pattern(hash_idx, pattern_len)
 }
 
 
+
 int get_hash_idx(char* pattern, int pattern_len)
 {
 	return calculate_hash_index_value(pattern, pattern_len);
@@ -156,11 +153,15 @@ void initialize_precalculated_values()
 
 }
 
+
+
 void deinitialize_precalculated_values()
 {
 	PRECALCULATED_BASE_VALUES_SIZE = 0;
 	free(PRECALCULATED_BASE_VALUES); PRECALCULATED_BASE_VALUES = 0;
 }
+
+
 
 /**
  * Create an empty pattern table. 
@@ -198,6 +199,7 @@ PATTERN_TABLE* create_pattern_table(pattern_len)
 }
 
 
+
 /**
  * Delete pattern_table
  */
@@ -228,8 +230,6 @@ void destroy_pattern_table(table)
 	if(PRECALCULATED_BASE_VALUES_SIZE != 0)
 		deinitialize_precalculated_values();
 }
-
-
 
 
 
@@ -312,7 +312,10 @@ PATTERN_TABLE* generate_pattern_profile(seq, seq_len, pattern_len, overlapping_l
 }
 
 
-//
+
+/**
+ * 
+ */
 int calculate_hash_index_value(word, word_len)
 	char *word;
 	int word_len;
@@ -373,6 +376,8 @@ INDEX* create_index(size)
 	return idx;
 }
 
+
+
 /**
  * input sindex, return qindex
  */
@@ -389,6 +394,9 @@ int get_index(idx, index)
 
 	return map_index;
 }
+
+
+
 
 void destroy_index(idx)
 	INDEX *idx;
