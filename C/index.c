@@ -112,7 +112,6 @@ char* get_pattern(hash_idx, pattern_len)
 	int remainder, base, denom;
 	char base_list[] = {HASH_VALUE_A_CHAR, HASH_VALUE_T_CHAR, HASH_VALUE_G_CHAR, HASH_VALUE_C_CHAR, HASH_VALUE_N_CHAR};
 
-	//printf("Pattern len=%d\n", pattern_len);
 
 	pattern = (char*)calloc(pattern_len + 1, sizeof(char));
 	memset(pattern, 0, pattern_len + 1);
@@ -185,19 +184,13 @@ PATTERN_TABLE* create_pattern_table(pattern_len)
 	table->patterns = (char**)calloc(table->pattern_n, sizeof(char*));
 	table->pattern_vals = (size_t**)calloc(table->pattern_n, sizeof(size_t*));
 	table->pattern_val_lens = (size_t*)calloc(table->pattern_n, sizeof(size_t));
-	//table->pattern_val_buffer_sizes = (size_t*)calloc(table->pattern_n, sizeof(size_t));
 
 	for(i = 0; i < table->pattern_n; i++)
 	{
 		table->patterns[i] = get_pattern(i, pattern_len);
-		//table->pattern_vals[i] = (size_t*)calloc(BUFFER_SIZE, sizeof(size_t));
-		//table->pattern_vals[i] = 0;
 		table->pattern_val_lens[i] = 0;
 
-		//table->pattern_val_buffer_sizes[i] = BUFFER_SIZE;
-
 		table->pattern_vals[i] = 0;
-		//table->pattern_val_buffer_sizes[i] = 0;
 	}
 
 
@@ -206,7 +199,7 @@ PATTERN_TABLE* create_pattern_table(pattern_len)
 
 
 /**
- * 
+ * Delete pattern_table
  */
 void destroy_pattern_table(table)
 	PATTERN_TABLE* table;
@@ -226,8 +219,8 @@ void destroy_pattern_table(table)
 	table->pattern_vals = 0;
 	free(table->pattern_val_lens);
 	table->pattern_val_lens = 0;
-	//free(table->pattern_val_buffer_sizes);
-	//table->pattern_val_buffer_sizes = 0;
+
+
 	free(table);
 	table = 0;
 
@@ -277,22 +270,7 @@ PATTERN_TABLE* generate_pattern_profile(seq, seq_len, pattern_len, overlapping_l
 		{
 			printf("Unknown pattern: %s\n", pattern);
 		} else {
-			//printf("%d pattern=%s hash_idx=%d\n", i, pattern, hash_idx);
-
-
 			table->pattern_val_lens[hash_idx] += 1;
-
-//			if(table->pattern_val_lens[hash_idx] >= table->pattern_val_buffer_sizes[hash_idx])
-//			{
-//				table->pattern_val_buffer_sizes[hash_idx] += BUFFER_SIZE;
-//				table->pattern_vals[hash_idx] = (size_t*)realloc(table->pattern_vals[hash_idx], table->pattern_val_buffer_sizes[hash_idx]);
-//				printf("table->pattern_val_buffer_sizes[hash_idx]=%d, table->pattern_val_lens[hash_idx]=%d\n", table->pattern_val_buffer_sizes[hash_idx], table->pattern_val_lens[hash_idx]);
-//
-//			}
-
-			//table->pattern_vals[hash_idx] = (size_t*)realloc(table->pattern_vals[hash_idx], table->pattern_val_lens[hash_idx]);
-//			printf("d=%d\n", table->pattern_val_lens[hash_idx]);
-//			table->pattern_vals[hash_idx][table->pattern_val_lens[hash_idx] - 1] = i;
 		}
 	}
 
@@ -433,7 +411,6 @@ INDEX* create_index(size)
 		idx->map_index[i] = DEFAULT_INDEX;
 	}
 
-	//idx->qindex = (int*)calloc(size, sizeof(int));
 	idx->mapping_num = 0;
 
 	return idx;
