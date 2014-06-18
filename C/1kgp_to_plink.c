@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-
 #include <map>
 #include <vector>
 #include <string>
@@ -18,91 +17,23 @@
 #include <iostream>
 #include <fstream>
 
-
-
-#include <boost/thread.hpp>
-
-
+#include <boost/thread.hpp>   // Boost library required
 
 
 #include "vcf41.h"
 
 
 
-//@headers = ();
-//$REF_IDX = 3;
-//$ALT_IDX = 4;
-//$GENOTYPE_IDX = 9;
-//$RSID_IDX = 2;
-//$CHROM_IDX = 0;
-//$POS_IDX = 1;
-//@genotypes = ();
-//$ind_n = 0;
-//if(defined IN) {
-//        #open PED_OUT, ">", $fn_ped;
-//        open MAP_OUT, ">", $fn_map;
-//        while(<IN>) {
-//                chomp;
-//
-//                if(/^##/) { # Header line ignore.
-//                } elsif(/^#C/) { # Column headers
-//                        #print qq{$_\n};
-//                        @headers = split /\t/, $_;
-//                } else {
-//                        #@items = split /\t/, $_;
-//
-//                        #push @genotypes, \@items;
-//                        push @genotypes, [split /\t/];
-//                }
-//        }
-//        close IN;
-//
-//        $ind_n = scalar @headers - $GENOTYPE_IDX;
-//        print "Individual number: " . $ind_n . "\n";
-//        print "Number of loci: " . scalar @genotypes . "\n";
-//#       for(my $i = 0; $i < $ind_n; $i++){
-//#               my $genotype_idx = $i + $GENOTYPE_IDX;
-//#               print PED_OUT $headers[$genotype_idx];
-//#               print "Processing " . $headers[$genotype_idx] . "\n";
-//#
-//#               my $ped_str = "";
-//#               for(my $j = 0; $j < scalar @genotypes; $j++) {
-//#                       my @snp_genotypes = @{$genotypes[$j]};
-//#                       #print scalar @snp_genotypes . "\n";
-//#               #foreach(@genotypes) {
-//#                       #my @snp_genotypes = @$_;
-//#                       my $genotype_str = $snp_genotypes[$genotype_idx];
-//#                       #print substr($genotype_str, 0, 1) . "\n";
-//#                       my $a1 = substr($genotype_str, 0, 1) + 1;
-//#                       my $a2 = substr($genotype_str, 2, 1) + 1;
-//#                       #print PED_OUT "  " . $a1 . " " . $a2;
-//#                       $ped_str = $ped_str . "  " . $a1 . " " . $a2;
-//#               }
-//#               print PED_OUT $ped_str . "\n";
-//#       }
-//
-//        my $unknown_id_n = 0;
-//        for(my $j = 0; $j < scalar @genotypes; $j++) {
-//                my @snp_genotypes = @{$genotypes[$j]};
-//
-//                my $chr = $snp_genotypes[$CHROM_IDX];
-//                my $rs = $snp_genotypes[$RSID_IDX];
-//                my $pos = $snp_genotypes[$POS_IDX];
-//
-//                if(length($rs) == 1) {
-//                        $rs = "unknown_" . $unknown_id_n;
-//                        $unknown_id_n++;
-//                }
-//                print MAP_OUT $chr . " " . $rs . " " . $pos . "\n";
-//        }
-//
-//        close IN;
-//        #close PED_OUT;
-//        close MAP_OUT;
-//        print scalar @genotypes . "\n";
-//        @genotypes = ();
-//}
-
+typedef struct {
+	/*
+	size_t spos;
+	size_t epos;
+	string block_ctx;
+	size_t locus_n;
+	*/
+	string det_line;
+	string block_line;
+} HAPBLOCK;
 
 
 typedef struct {
@@ -112,6 +43,9 @@ typedef struct {
 	string ped_outfilename;
 	string map_outfilename;
 } JOB;
+
+
+
 
 boost::mutex io_mutex;
 vector<JOB*> job_list;
@@ -125,14 +59,15 @@ bool isTerminated = false;
 VCF *vcf;
 VCF_POPULATION_INFO *vcf_info;
 
-
+// Function declaration
 int export_data(VCF *vcf, VCF_POPULATION_INFO *vcf_info, vector<string> ind_ids, vector<string> site_ids, string ped_outfilename, string map_outfilename);
+
+
 
 
 void thread_process()
 {
 	int tid = map_tid.find(boost::this_thread::get_id())->second;
-
 
 	//boost::posix_time::seconds workTime(time);
 	boost::mutex::scoped_lock lock(io_mutex);
@@ -151,8 +86,8 @@ void thread_process()
 		//
 		export_data(vcf, vcf_info, job->ind_ids, job->site_ids, job->ped_outfilename, job->map_outfilename);
 	}
-
 }
+
 
 void clear_thread_resource( )
 {
@@ -179,19 +114,6 @@ void clear_thread_resource( )
 }
 
 
-/**
- *
- */
-typedef struct {
-	/*
-	size_t spos;
-	size_t epos;
-	string block_ctx;
-	size_t locus_n;
-	*/
-	string det_line;
-	string block_line;
-} HAPBLOCK;
 
 
 
@@ -515,39 +437,6 @@ int generate_split_map(VCF *vcf, VCF_POPULATION_INFO *vcf_info, int map_size, in
 
 
 
-// int generate_split_map_pop(VCF *vcf, VCF_POPULATION_INFO *vcf_info, int map_size, int overlapping_size, string outfile_prefix)
-// {
-//	 int export_n = 0, n = 0;
-//	 ofstream run_out;
-//	 string run_fn = outfile_prefix;
-//	 run_fn.append(".run");
-//
-//	 run_out.open(run_fn);
-//
-//	 for(int k = 0; k < vcf_info->population_ids.size(); k++) {
-//		 string pop_id = vcf_info->population_ids[k];
-//		 string pop_outfile_prefix= outfile_prefix;
-//		 pop_outfile_prefix.append(".");
-//		 pop_outfile_prefix.append(pop_id);
-//
-//		 n = generate_split_map(vcf, vcf_info, map_size, overlapping_size, pop_outfile_prefix,  pop_id);
-//
-//		 if(n > 0)
-//			 run_out << "more " << pop_outfile_prefix<< ".run >> run.commands"  << endl;
-//
-//		 export_n += n;
-//	 }
-//
-//	 run_out.close();
-//
-//	 cout << "Number of export: " << export_n << endl;
-//
-//	 return export_n;
-// }
-
-
-
-
 int generate_split_map_pop(VCF *vcf, VCF_POPULATION_INFO *vcf_info, int map_size, int overlapping_size, string outfile_prefix)
 {
 	int export_n = 0, n = 0;
@@ -593,163 +482,6 @@ int generate_split_map_pop(VCF *vcf, VCF_POPULATION_INFO *vcf_info, int map_size
  }
 
 
-
-
-
-//
-//void generate_population()
-//{
-//
-//	ofstream map_out, ped_out, run_out;
-//
-//	ped_out.open(ped_outfile.c_str());
-//
-//	for(int i = 0; i < vcf->individual_num(); i++) {
-//		string ind_id = vcf->get_individual_id(i);
-//		//ped_out << ind_id.c_str();
-//
-//		/*
-//		if(i == 0)
-//		cout << i << ") processing " << ind_id << "..." << endl;
-//		 */
-//		ind_info = vcf_info->get_individual_info(ind_id);
-//
-//		if(ind_info == 0)
-//		{
-//			cout << ind_id << " does not have a valid meta data available, default missing values will be put." << endl;
-//			// Family ID\tIndividual ID\tGender Code (0: missing, 1: male, 2: female)\tPhenotype (0: unaffected, 1: affected, -9: unknown )
-//			ped_out << ind_id << "\t" << ind_id << "\t0" <<  "\t0";
-//		} else {
-//			if(ind_info->fid != 0)
-//				ped_out << ind_info->fid;
-//			else
-//				ped_out << ind_id;
-//
-//			ped_out << "\t" << ind_id;
-//
-//			ped_out << "\t" << ind_info->gender;
-//
-//			ped_out << "\t0";
-//		}
-//
-//
-//		for(int j = 0; j < vcf->site_num(); j++) {
-//			string site_id = vcf->get_site_id(j);
-//			string ref_a, alt_a;
-//
-//
-//			/*
-//			if(i == 0)
-//				cout << site_id << endl;
-//			 */
-//
-//			char g1, g2;
-//			int geno = vcf->get_genotype(site_id, ind_id);
-//
-//			//ref_a = vcf.get_ref_allele(site_id);
-//			//alt_a = vcf.get_ref_allele(site_id);
-//
-//			if(geno == '0') {
-//				ped_out << "  1 1";
-//				//g1 = '0'; g2 = '0';
-//			} else if(geno == '1') {
-//				ped_out << "  1 2";
-//				//g1 = '0'; g2 = '1';
-//			} else if(geno == '2') {
-//				ped_out << "  2 1";
-//				//g1 = '1'; g2 = '0';
-//			} else if(geno == '3') {
-//				ped_out << "  2 2";
-//				//g1 = '1'; g2 = '1';
-//			} else { // Missing
-//				ped_out << "  0 0";
-//				//g1 = '?'; g2 = '?';
-//			}
-//
-//			//ped_out << g1 << " " << g2
-//		}
-//		ped_out << endl;
-//		ped_out.flush();
-//	}
-//	ped_out.close();
-//
-//
-//	cout << "Creating MAP file..." << endl;
-//
-//	map_out.open(map_outfile.c_str());
-//	for(int i = 0; i < vcf->site_num(); i++) {
-//		string site_id = vcf->get_site_id(i);
-//
-//		VCF_DATA* vcf_data = vcf->get_vcf(site_id);
-//
-//		if(vcf_data)
-//			map_out <<  vcf_data->chrom << " "<< *vcf_data->id << " " << vcf_data->pos <<  endl;
-//		else
-//			cout << i << ") Problem with the site " << site_id << "." << endl;
-//	}
-//	map_out.close();
-//
-//
-//	cout << "VCF size: " << vcf->site_num() << endl;
-//
-//
-//
-//
-//
-//	/**
-//	 * Output ped file for each population
-//	 */
-//
-//
-//	run_out.open("run.pl");
-//
-//	vector<string> site_ids;
-//	for(int i = 0; i < vcf->site_num(); i++) {
-//		site_ids.push_back(vcf->get_site_id(i));
-//	}
-//
-//
-//	for(int k = 0; k < vcf_info->population_ids.size(); k++) {
-//		VCF_POPULATION *pop = vcf_info->map_population.find(vcf_info->population_ids[k])->second;
-//
-//		cout << "Processing " << pop->population_id << "..." << endl;
-//
-//		int ind_n = 0;
-//		vector<string> ind_ids;
-//
-//		for(int i = 0; i < pop->individual_infos.size(); i++)
-//		{
-//			string ind_id = pop->individual_infos[i]->individual_id;
-//			if(vcf->is_individual_found(ind_id)) {
-//				ind_ids.push_back(ind_id);
-//				ind_n++;
-//			}
-//		}
-//
-//		if(ind_n > 0) {
-//			cout << k << ": Creating PED file for the population " << pop->population_id << endl;
-//
-//			string pop_ped_fn = ped_outfile;
-//			pop_ped_fn.append(".");
-//			pop_ped_fn.append(pop->population_id);
-//			pop_ped_fn.append(".ped");
-//			string pop_map_fn = ped_outfile;
-//			pop_map_fn.append(".");
-//			pop_map_fn.append(pop->population_id);
-//			pop_map_fn.append(".map");
-//
-//
-//			run_out << "~/share/tools/plink/plink --ped " << pop_ped_fn << " --out " <<  pop_ped_fn << " --map " <<  pop_map_fn << "  --missing-phenotype 0 --no-parents --map3 --blocks --1 &" << endl;
-//			int export_n = export_data(vcf, vcf_info, ind_ids, site_ids, pop_ped_fn, pop_map_fn);
-//			cout << "Number of exported for " << pop->population_id << ": " << export_n << endl;
-//		} else {
-//			cout << k << ": No VCF data for the population " << pop->population_id << endl;
-//		}
-//
-//		ind_ids.clear();
-//	}
-//
-//}
 
 
  void print_usage()
