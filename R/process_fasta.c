@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#include "SeqTools/fasta_reader.h"
+#include "fasta_reader.h"
 
 
 /**
