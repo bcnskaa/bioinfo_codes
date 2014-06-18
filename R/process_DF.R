@@ -34,211 +34,12 @@ META_LIST_META_LABEL = "META";
 META_LIST_DATA_LABEL = "DATA";
 META_CLASS_LABEL_PATTERN_DELIMITOR = ";";
 
-# Create an empty list of feature poss data
 
-
-
-
-#process_DF_test_code("chr19", 1500000);
-#process_DF_test_code("chr18", 1500000);
-#process_DF_test_code("chrX", 1500000);
-#process_DF_test_code("chr5", 1500000);
-test_code_process_DF <- function(chr_id, bin_size) 
-{
-	
-# Construct a list of df from a list of filenames
-# fns_df: filename, group_label, data_label, data_type[point|range|mixed], chrom_label, class_label, description
-gc();
-	
-source("process_DF.R");
-
-fns <- read.table("/data/bcnskaa/UCSC/annotations/ucsc_annotations_for_R.lst", header=T, sep="\t", quote="", stringsAsFactors=F);
-fns$filename <- paste("/data/bcnskaa/UCSC/annotations", "/", fns$filename, sep="");
-#chr_id <- "chr13";
-#bin_size <- 150000;
-	
-if(exists(commandArgs(TRUE)[1]) || !is.na(commandArgs(TRUE)[1]))
-{
-	chr_id <- commandArgs(TRUE)[1];
-}	
-
-if(exists(commandArgs(TRUE)[2]) || !is.na(commandArgs(TRUE)[2]))
-{
-	bin_size <- commandArgs(TRUE)[2];
-}
-
-print(paste("Processing chr_id=", chr_id, " and bin_size=", bin_size, sep=""))
-
-
-source("chromosome_stats.R");
-chr_len <- get_chr_len(chr_id);
-
-
-meta_df_list <- construct_meta_df(fns, chr_id);
-
-
-gc();
-
-#poss_list <- convert_df_to_poss(meta_df_list);
-#bin_list <- convert_poss_list_to_bin(poss_list, bin_size)
-#bin_list2 <- convert_meta_df_to_bin(meta_df_list, bin_size);
-	
-factorized_meta_df_list <- factorize_meta_df(meta_df_list);
-#source("process_DF.R");
-
-fns <- read.table("/data/bcnskaa/UCSC/annotations/ucsc_annotations_for_R.lst", header=T, sep="\t", quote="", stringsAsFactors=F);
-fns$filename <- paste("/data/bcnskaa/UCSC/annotations", "/", fns$filename, sep="");
-#chr_id <- "chr13";
-#bin_size <- 150000;
-
-meta_df_list <- construct_meta_df(fns, chr_id);
-
-
-gc();
-
-#poss_list <- convert_df_to_poss(meta_df_list);
-#bin_list <- convert_poss_list_to_bin(poss_list, bin_size)
-#bin_list2 <- convert_meta_df_to_bin(meta_df_list, bin_size);
-
-factorized_meta_df_list <- factorize_meta_df(meta_df_list);
-factorized_meta_df_label_info <- get_ordered_label_meta_info_by_group_id(factorized_meta_df_list);
-
-gc();
-
-bin_list3 <- convert_meta_df_to_bin(factorized_meta_df_list, bin_size=bin_size, max_len=chr_len);
-
-
-gc();
-
-source("process_fasta.R")
-# fasta sequence
-fasta_fn <- paste("/data/bcnskaa/UCSC/", chr_id, ".fa", sep="");
-N_poss <- process_fasta_c(fasta_fn, chr_id, "N");
-
-gc();
-
-N_poss_bin <- convert_poss_list_to_bin(list(N=N_poss), bin_size=bin_size, max_len=chr_len)
-N_poss_bin <- (bin_size - N_poss_bin) / bin_size;
-# Add the N_poss_bin and use it to filter bin having N-characters
-bin_list3[["N"]] <- N_poss_bin$N;
-
-gc();
-
-
-source("plot_scatter_mtx.R");
-#plot_scatter_mtx(bin_list3, png_outfile="plot_scatter_matrix.png", scatter_size=2);	
-#plot_scatter_mtx(bin_list3, png_outfile="plot_scatter_matrix.png");
-
-plot_data <- create_plot_data(bin_list3);
-plot_data <- trim_plot_data(plot_data, focal_colname="N", trim_threshold=0.95);
-tryCatch(plot_data <- trim_plot_data(plot_data, focal_colname="DecodeRecombRate_SexAverage"), error=function(e) print(e));
-
-
-# N_poss column will not be included in the sorted plot_data
-plot_data <- sort_plot_data_by_group(plot_data, factorized_meta_df_label_info$LABEL);
-
-gc();
-
-pdf_outfn <- paste("plot_scatter_matrix.", chr_id, ".", bin_size, ".all.pdf", sep="");
-plot_scatter_mtx2(plot_data, pdf_outfile=pdf_outfn, scatter_size=150, plot_title=paste("Correlation plot of ", chr_id, " (", bin_size," bp)", sep=""));
-system(paste("convert", pdf_outfn, sub(".pdf", ".png", pdf_outfn),sep=" "))
-gc();
-
-
-
-# Prepare a correlation matrix
-cor_mtx <- cor(plot_data)
-cor_plot_data <- create_plot_data_from_plot_mtx(cor_mtx)
-
-
-source("plot_heat_map.R")
-
-pdf_fn <- paste("correlation_map.", chr_id, ".pdf", sep="")
-#plot_heatmap_with_group_info(cor_plot_data, plot_title=paste("Correlation Matrix: ", chr_id , sep=""), pdf_width=10, pdf_height=10, pdf_fn=pdf_fn, show_value=F);
-plot_heatmap(cor_plot_data, xlabel_meta_info=factorized_meta_df_label_info, ylabel_meta_info=factorized_meta_df_label_info, plot_title=paste("Correlation Matrix: ", chr_id, " (Bin Size=", bin_size, " bp)", sep=""), pdf_width=12, pdf_height=12, pdf_fn=pdf_fn, show_value=F);
-system(paste("convert", pdf_fn, sub(".pdf", ".png", pdf_fn)))
-
-# Prepare a correlation matrix
-pdf_fn <- paste("correlation_map.", chr_id, ".valued.pdf", sep="")
-cor_plot_data$Z <- round(cor_plot_data$Z, digits=2)
-#plot_heatmap_with_group_info(cor_plot_data, plot_title=paste("Correlation Matrix: ", chr_id , sep=""), pdf_width=20, pdf_height=20, pdf_fn=pdf_fn, show_value=T);
-plot_heatmap(cor_plot_data, xlabel_meta_info=factorized_meta_df_label_info, ylabel_meta_info=factorized_meta_df_label_info, plot_title=paste("Correlation Matrix: ", chr_id, " (Bin Size=", bin_size, " bp)", sep=""), pdf_width=30, pdf_height=30, pdf_fn=pdf_fn, show_value=T);
-system(paste("convert", pdf_fn, sub(".pdf", ".png", pdf_fn)))
-
-
-pdf_fn <- paste("correlation_map.", chr_id, ".group-valued.pdf", sep="")
-#plot_heatmap_with_group_info(cor_plot_data, plot_title=paste("Correlation Matrix: ", chr_id , sep=""), pdf_width=20, pdf_height=20, pdf_fn=pdf_fn, show_value=T);
-plot_heatmap_with_group_info(cor_plot_data, xlabel_meta_info=factorized_meta_df_label_info, ylabel_meta_info=factorized_meta_df_label_info, show_value=T, plot_title=paste("Correlation plot of ", chr_id, "(bin size=", bin_size, " bp)", sep=""), title_x=-5, title_y=1.05, pdf_fn=pdf_fn, pdf_width=23, pdf_height=23)
-system(paste("convert", pdf_fn, sub(".pdf", ".png", pdf_fn)))
-
-
-labels <- colnames(plot_data)
-data_n <- dim(plot_data)[2]
-cor_pval_mtx <- matrix(0.0, data_n, data_n)
-colnames(cor_pval_mtx) <- labels;
-rownames(cor_pval_mtx) <- labels;
-
-
-cor_df <- data.frame(labels=character(0), xlabel=character(0), ylabel=character(0), cor=numeric(0), pval=numeric(0), conf_low=numeric(0), conf_high=numeric(0), stringsAsFactors=F);
-for(i in 1 : data_n)
-{
-	xlabel <- colnames(cor_pval_mtx)[i];
-	for(j in 1 : data_n)
-	{
-		ylabel <- rownames(cor_pval_mtx)[j];
-		res <- cor.test(plot_data[,which(colnames(plot_data) == xlabel)], plot_data[,which(colnames(plot_data) == ylabel)])
-		#print(paste(xlabel, ylabel, "=", res$p.value, sep=""))
-		cor_pval_mtx[i, j] <- res$p.value;
-		
-		cor_df <- rbind(cor_df, data.frame(labels=paste(xlabel, ":", ylabel, sep=""), xlabel=xlabel, ylabel=ylabel, cor=res$estimate, pval=res$p.value, conf_low=res$conf.int[1], conf_high=res$conf.int[2], stringsAsFactors=F));
-	
-	}
-}
-cor_pval_plot_data <- create_plot_data_from_plot_mtx(cor_pval_mtx)
-cor_pval_plot_data$Z <- round(cor_pval_plot_data$Z, digits=3)
-
-write.table(cor_df, paste("correlation_pvalue.", chr_id, ".", bin_size, ".txt", sep=""), row.names=F, quote=F, sep="\t")
-
-
-pdf_fn <- paste("correlation_map.", chr_id, ".p_values.pdf", sep="")
-#plot_heatmap_with_group_info(cor_plot_data, plot_title=paste("Correlation Matrix: ", chr_id , sep=""), pdf_width=20, pdf_height=20, pdf_fn=pdf_fn, show_value=T);
-plot_heatmap_with_group_info(cor_pval_plot_data, xlabel_meta_info=factorized_meta_df_label_info, ylabel_meta_info=factorized_meta_df_label_info, show_value=T, plot_title=paste("Significance of Correlation plot of ", chr_id, " (bin size=", bin_size, " bp)", sep=""), title_x=-5, title_y=1.05, pdf_fn=pdf_fn, pdf_width=23, pdf_height=23, scale_colors=c("blue", "yellow"), scale_limits=c(0, 1))
-system(paste("convert", pdf_fn, sub(".pdf", ".png", pdf_fn)))
-
-
-
-rm(list=ls());
-}
-
-
-##########
-# poss feature table
-##########
-#feature_poss[["COSMIC"]] <- cosmic_chr_bp;
-#feature_poss[["1KGP_INDELS"]] <- indels_frq$POS;
-#feature_poss[["1KGP_SNVS"]] <- snv_frq$POS;
-#feature_poss[["DGV_BP"]] <- dgv_chr_bp;
-#feature_poss[["DGV_BP_UNIQUE"]] <- dgv_chr_bp_unique;
-#feature_poss[["DGV_BP_NR"]] <- dgv_chr_bp_nonredundant;
-#feature_poss[["DGV_BP_GAIN"]] <- dgv_chr_bp_gain;
-#feature_poss[["DGV_BP_GAINLOSS"]] <- dgv_chr_bp_gainloss;
-#feature_poss[["DGV_BP_COMPLEX"]] <- dgv_chr_bp_complex;
-#feature_poss[["DGV_BP_GAIN"]] <- dgv_chr_bp_gain;
-#feature_poss[["DGV_BP_CNV"]] <- dgv_chr_bp_cnv;
-#feature_poss[["DGV_BP_INSERTION"]] <- dgv_chr_bp_insertion;
-#feature_poss[["DGV_BP_DELETION"]] <- dgv_chr_bp_deletion;
-
-#########
-#
-# Construct feature_set based on unique labels
-#
-#########
 # write.table(melt_isca, "/data/bcnskaa/UCSC/annotations/isca/iscaAllTissues.txt2", sep="\t", quote=F, row.names=F)
-
 # Input: a list of dataframes with identical number and name of columns
 # Output: a dataframe containing all elements of dataframes and a new column specifies name of the dataframe from which element is draw from
 # Argument: df_list=a list of dataframes with identical number and name of columns
-#			new_class_label=the name of new column listing the source dataframes  
+#	    new_class_label=the name of new column listing the source dataframes  
 melt_df <- function(df_list, new_class_label="class") {
 	if(length(unique(sapply(df_list, function(v) dim(v)[2]))) != 1)
 	{
@@ -273,10 +74,6 @@ melt_df <- function(df_list, new_class_label="class") {
 }
 
 
-trim_df <- function(bin_list) 
-{
-
-}
 
 #
 #
@@ -323,18 +120,6 @@ process_df <- function(dataframe, label_idx, label_n_cutoff = 0)
 	select_labels <- names(counts[counts >= label_n_cutoff]);
 	
 	return(process_df_with_label_vals(dataframe, label_idx, select_labels, labal_n_cutoff));
-	
-#	label_n <- length(select_labels);
-#	# Create a new data.frame
-#	df <- list();
-#	
-#	for(i in 1 : label_n)
-#	{
-#		current_label <- select_labels[i];
-#		df[[current_label]] <- dataframe[which(dataframe[,label_idx] == current_label),];
-#	}
-#	
-#	return(df);
 }
 
 
@@ -473,28 +258,6 @@ convert_meta_df_to_bin <- function(meta_df_list, bin_size, max_len)
 	datum <- meta_df_list[[META_LIST_DATA_LABEL]];
 	data_n <- length(datum);
 	
-	
-#	if(length(max_len) == 0)
-#	{
-#		max_len <- 0;
-#		for(i in 1 : length(metum)) {
-#			meta <- metum[i, ];
-#			data <- datum[[i]];
-#			
-#			#print(meta$name)
-#			#print(meta$epos_label)
-#			# sapply(seq(1:length(meta_df_list$META$name)), function(i) max(meta_df_list$DATA[[i]][, meta_df_list$META$epos_label[i]]))
-#			val <- max(data[,meta$epos_label]);
-#			if(val > max_len)
-#			{
-#				max_len <- val;
-#			}
-#		}
-#		max_len <- max_len + bin_size;
-#	}
-	
-	#print(paste("Max length=", max_len,sep=""));
-	
 	bin_breaks <- seq(0, max_len, by=bin_size);
 	bin_df <- data.frame();
 	
@@ -553,12 +316,6 @@ convert_meta_df_to_bin <- function(meta_df_list, bin_size, max_len)
 					poss <- c(point_poss, range_poss);
 					
 				} else if(datatype == "point") {
-					#print(paste("Processing point data ", name, " length=", nrow(data), sep=""));
-					#poss <- data[, spos_label];
-					#if(spos_label != epos_label)
-					#{
-					#	poss <- c(poss, data[, epos_label]);
-					#}
 					
 					print(paste("Processing point data ", name, " length=", nrow(data), sep=""));
 					poss <- sposs;
@@ -586,15 +343,6 @@ convert_meta_df_to_bin <- function(meta_df_list, bin_size, max_len)
 					valued_poss <- process_poss_vals_c(sposs, eposs, data_values, max_len);
 				
 				} else if(datatype == "mixed") {
-					#print(paste("Processing valued mixed data ", name, " size=", nrow(data), "x", ncol(data), sep=""));
-					#
-					#range_item_idx <- (data[, epos_label] - data[, spos_label]) > 1;
-					#
-					#valued_poss <- process_poss_vals_c(as.numeric(data[range_item_idx, spos_label]), as.numeric(data[range_item_idx, epos_label]), as.numeric(data[range_item_idx, value_label]), max_len);
-					#
-					#point_item_idx <- (data[, epos_label] - data[, spos_label]) == 1;
-					#valued_poss[point_item_idx] <- as.numeric((data[point_item_idx, value_label]));			
-					
 					
 					print(paste("Processing valued mixed data ", name, " size=", nrow(data), "x", ncol(data), sep=""));
 					
@@ -634,15 +382,6 @@ convert_meta_df_to_bin <- function(meta_df_list, bin_size, max_len)
 					bin_df <- cbind(bin_df, data.frame(x_____X_____=valued_list));
 				}
 				colnames(bin_df)[which(colnames(bin_df) == "x_____X_____")] <- name;
-				
-				#if(dim(bin_df)[2] == 0)
-				#{
-				#	bin_df <- data.frame(x_____X_____=as.numeric(table(cut(poss, breaks=bin_breaks, ordered_result=T))));
-				#} else {
-				#	bin_df <- cbind(bin_df, data.frame(x_____X_____=as.numeric(table(cut(poss, breaks=bin_breaks, ordered_result=T)))));
-				#}
-				#colnames(bin_df)[which(colnames(bin_df) == "x_____X_____")] <- name;
-				
 			}
 
 			
@@ -651,8 +390,6 @@ convert_meta_df_to_bin <- function(meta_df_list, bin_size, max_len)
 		}
 		
 	}
-	#print(length(rownames(bin_df)));
-	#print(length(bin_breaks));
 	rownames(bin_df) <- bin_breaks[1:(length(bin_breaks)-1)];
 	
 	return(bin_df);
@@ -788,11 +525,6 @@ convert_df_to_poss_by_ranges <- function(meta_df_list, range_df, max_len, includ
 				#bins <- process_poss_vals_to_ranges(data[,meta$spos_label], data[,meta$epos_label], data[,meta$value_label], range_df, max_len);
 				#poss <- process_poss_vals_c(data[,meta$spos_label], data[,meta$epos_label], data[,meta$value_label], max_len);
 			}
-			#} else { # It is not a valued dataset, just assign 1 as a default value
-			#	print(paste(">Range object identified.", sep=""));
-			#	bins <- process_poss_vals_to_ranges(data[,meta$spos_label], data[,meta$epos_label], rep(1.0, nrow(data)), range_df, max_len);
-			#	#poss <- process_poss_c(data[,meta$spos_label], data[,meta$epos_label]);
-			#}
 			
 			bins <- process_poss_vals_to_ranges(data[,meta$spos_label], data[,meta$epos_label], values, range_df, max_len);
 			
@@ -865,14 +597,6 @@ convert_range_df_to_poss <- function(meta_list_df, merge_duplicates=F)
 		# Check if the chrom_label contains only one single value
 		if(length(as.character(unique(data[, chrom_label]))) == 1)
 		{
-
-			#print(paste("Min pos=", min(data[, spos_label])));
-			#print(paste("Max pos=", max(data[, spos_label])));
-			#print(paste("Min pos=", min(data[, epos_label])));
-			#print(paste("Max pos=", max(data[, epos_label])));
-			#print(summary(data[, epos_label] - data[, spos_label]));
-			#print(min(data[, epos_label] - data[, spos_label]));
-
 			if(datatype == "range")
 			{
 				print(paste("Processing range data ", name, " size=", nrow(data), "x", ncol(data), sep=""));
@@ -903,15 +627,6 @@ convert_range_df_to_poss <- function(meta_list_df, merge_duplicates=F)
 	
 	return(poss_list);
 }
-
-# Fit distribution in R
-# http://stats.stackexchange.com/questions/25568/estimating-the-distribution-from-data
-# require(fitdistrplus)
-#bin_list$refGene[bin_list$refGene > 0]
-#tdat <- bin_list$refGene[bin_list$refGene > 0] - mean(bin_list$refGene[bin_list$refGene > 0])
-
-#descdist(tdat, boot=100)
-
 
 
 get_ordered_label_meta_info_by_group_id <- function(meta_df_list) {
@@ -956,12 +671,6 @@ get_ordered_label_by_group_id <- function(meta_df_list) {
 }
 
 # Construct a list of df from a list of filenames
-# fns_df: filename, group_label, data_label, data_type[point|range|mixed], chrom_label, class_label, description
-# fns <- data.frame(filename=character(0), group_label=character(0), data_label=character(0), data_type=character(0), filtering_column=character(0), filtering_value=character(0), description=character(0));
-# fns <- read.table("/data/bcnskaa/UCSC/annotations/ucsc_annotations_for_R.lst", header=T, sep="\t", stringsAsFactors=F)
-# fns$filename <- paste("/data/bcnskaa/UCSC/annotations", "/", fns$filename, sep="")
-# chr_id <- "chr19"
-# res <- construct_df(fns, chr_id)
 construct_df <- function(fns_df, chr_id=character(0), quote="", header=T, sep="\t", comment_char="#", stringsAsFactors=F) {
 	construct_meta_df(fns_df=fns_df, chr_id=chr_id, quote=quote, header=header, sep=sep, comment_char=comment_char, stringsAsFactors=stringsAsFactors);
 }
@@ -1042,18 +751,8 @@ retrieve_subset <- function(fn, colname, selected_value, quote="", header=T, sep
 	file.remove(tmp_fn);
 	return(tmp_df);
 }
-# system.time(rmsk <- read.delim2("rmsk.txt", sep="\t", quote="", header=T))
-# system.time(rmsk_chr <- rmsk[rmsk$genoName == "chr19",])
-# system.time(rmsk_chr2 <-retrieve_subset(fn="rmsk.txt", colname="genoName", selected_value="chr19"));
-#system.time(rmsk_chr2 <-retrieve_subset("rmsk.txt", "genoName", "chr19"));
 
-
-# fns <- list.files(".", pattern=".txt2")
-# ids <- sub("isca", "", sub(".txt2", "", fns))
-# colname <- "chrom"
-# selected_value <- "chr19";
-# df_list <- import_df_from_multiple_files(fns, ids, colname, selected_value);
-# files_df: [filename]
+#
 import_df_from_multiple_files <- function(filenames, df_ids, colname=character(0), selected_value=character(0), sep="\t", header=T, quote="", comment_char="#", stringsAsFactors=F) 
 {
 
@@ -1164,14 +863,6 @@ create_plot_data_from_plot_mtx <- function(plot_mtx)
 	plot_data <- data.frame(X=integer(0), Y=integer(0), Z=integer(0), stringsAsFactors=F);
 	for(i in 1 : row_n)
 	{
-		#data <- data.frame(X=integer(col_n), Y=integer(col_n), Z=integer(col_n), stringsAsFactors=F);
-		#for(j in 1 : col_n)
-		#{
-		#	data[j] <- c(rownames(plot_mtx[i,j]), colnames(plot_mtx[i,j]), plot_mtx[i,j]) 
-		#}
-		#plot_data <- rbind(plot_data,data);
-		
-		#plot_data <- rbind(plot_data, data.frame(X=colnames(plot_mtx[i,]),Y=rep(rownames(plot_mtx[i,]), col_n), Z=as.numeric(plot_mtx[i,]), stringsAsFactors=F))
 		plot_data <- rbind(plot_data, data.frame(X=col_names, Y=rep(row_names[i], col_n), Z=as.numeric(plot_mtx[i, ]), stringsAsFactors=F))
 	}
 	
@@ -1302,6 +993,3 @@ multiplot <- function(..., plotlist=NULL, cols) {
 	}
 	
 }
-
-
-
