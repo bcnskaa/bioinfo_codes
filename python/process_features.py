@@ -210,13 +210,6 @@ def cut_poss2bins(poss, breaks):
 
 
 
-
-# Print
-def print_bins():
-	print("print_bins()")
-
-
-
 # 
 def export_features(features, out_fn):
 	print("export_features(): exporting features ", features[FEATURE_NAME_TAG], "(size=", features[FEATURE_LEN_TAG], ") to ", out_fn, "...", sep="")
