@@ -35,7 +35,6 @@ META_LIST_DATA_LABEL = "DATA";
 META_CLASS_LABEL_PATTERN_DELIMITOR = ";";
 
 
-# write.table(melt_isca, "/data/bcnskaa/UCSC/annotations/isca/iscaAllTissues.txt2", sep="\t", quote=F, row.names=F)
 # Input: a list of dataframes with identical number and name of columns
 # Output: a dataframe containing all elements of dataframes and a new column specifies name of the dataframe from which element is draw from
 # Argument: df_list=a list of dataframes with identical number and name of columns
@@ -51,12 +50,12 @@ melt_df <- function(df_list, new_class_label="class") {
 		
 	melted_df <- data.frame();
 	
-	# 
+
 	for(label in class_labels) {
 		print(paste("Processing ", label, "...", sep=""));
 		
 		cur_df <- df_list[[label]];
-		#cur_df <- cbind(cur_df, class=rep(label, nrow(cur_df)));
+
 		cur_df <- cbind(cur_df, X______X_____X=rep(label, nrow(cur_df)));
 		if(dim(melted_df)[1] == 0)
 		{
@@ -65,9 +64,7 @@ melt_df <- function(df_list, new_class_label="class") {
 			melted_df <- rbind(melted_df, cur_df);
 		}
 	}
-	#melted_df$X______X_____X <- as.character(melted_df$X______X_____X);
-	
-	#melted_df$class <- as.character(melted_df$class);
+
 	colnames(melted_df)[colnames(melted_df) == "X______X_____X"] <- new_class_label;
 	
 	return(melted_df);
@@ -80,11 +77,10 @@ melt_df <- function(df_list, new_class_label="class") {
 # 
 process_df_with_label_vals <- function(dataframe, label_idx, label_vals, label_n_cutoff = 0)
 {
-	#unique_labels <- as.character(unique(df[, label_idx]));
-	#counts <- table(dataframe[, label_idx])
 	select_labels <- as.character(label_vals);
 	
 	label_n <- length(select_labels);
+	
 	# Create a new data.frame
 	df <- list();
 	
@@ -115,7 +111,6 @@ process_df_with_label_regex <- function(dataframe, label_idx, label_val_regex, l
 #
 process_df <- function(dataframe, label_idx, label_n_cutoff = 0)
 {
-	#unique_labels <- as.character(unique(df[, label_idx]));
 	counts <- table(dataframe[, label_idx])
 	select_labels <- names(counts[counts >= label_n_cutoff]);
 	
@@ -139,15 +134,16 @@ test_code_convert_meta_df_to_bin <- function()
 
 
 
-# test <- factorize_meta_df(meta_df_list)
+#
 factorize_meta_df <- function(meta_df_list, replace_original=T, enable_class_label_pattern=F, fixed_class_label_pattern=F)
 {
 	source("list_count.R");
 	
 	metum <- meta_df_list[[META_LIST_META_LABEL]];
 	datum <- meta_df_list[[META_LIST_DATA_LABEL]];
+
 	####################
-	# bug
+	# bug here
 	###################
 	data_n <- length(datum);
 	
@@ -184,8 +180,6 @@ factorize_meta_df <- function(meta_df_list, replace_original=T, enable_class_lab
 						df <- data[selected_idx,];
 						df_meta <- meta;
 						df_meta$name <- validate_colname(paste(name, "_", pattern, sep=""));
-						#df_meta$name <- paste(name, "_", pattern, sep="");
-						#df_meta$name <- gsub("[-]", "_", sub("[+]", "_", df_meta$name));
 						df_meta$class_label <- "";
 					
 						meta_df_list$DATA[[df_meta$name]] <- df;
@@ -244,12 +238,8 @@ validate_colname <- function(colname)
 }
 
 
-# test <- meta_df_list$DATA$decodeRecombRate
-# valued_poss <- process_poss_vals_c(test$chromStart, test$chromEnd, as.numeric(test$Rate),  max_len)
-# xyplot(valued_list ~ bin_breaks[-length(bin_breaks)], data.frame(bin_breaks[-length(bin_breaks)], valued_list))
-# xyplot(NucleaseAssessibleSitesPos ~ NucleaseAssessibleSitesNeg, data.frame(NucleaseAssessibleSitesPos=bin_list2$NucleaseAssessibleSitesPos, NucleaseAssessibleSitesNeg=bin_list2$NucleaseAssessibleSitesNeg))
 
-#convert_meta_df_to_bin <- function(meta_df_list, bin_size, max_len=integer(0))
+#
 convert_meta_df_to_bin <- function(meta_df_list, bin_size, max_len)
 {
 	source("process_poss.R");
@@ -287,22 +277,10 @@ convert_meta_df_to_bin <- function(meta_df_list, bin_size, max_len)
 			{
 				if(datatype == "range")
 				{
-					#print(paste("Processing range data ", name, " size=", nrow(data), "x", ncol(data), sep=""));
-					#poss <- process_poss_c(data[, spos_label], data[, epos_label]);
-					
 					print(paste("Processing range data ", name, " size=", nrow(data), "x", ncol(data), sep=""));
 					poss <- process_poss_c(sposs, eposs);
 					
 				} else if(datatype == "mixed") {
-					#print(paste("Processing mixed data ", name, " size=", nrow(data), "x", ncol(data), sep=""));
-					#
-					#point_poss <- data[(data[, epos_label] - data[, spos_label]) == 1, spos_label];
-					#
-					#range_item_idx <- (data[, epos_label] - data[, spos_label]) > 1;
-					#range_poss <- process_poss_c(data[range_item_idx, spos_label], data[range_item_idx, epos_label]);
-					#
-					#poss <- c(point_poss, range_poss);
-					
 					
 					print(paste("Processing mixed data ", name, " size=", nrow(data), "x", ncol(data), sep=""));
 					
@@ -436,13 +414,7 @@ convert_poss_list_to_bin <- function(poss_list, bin_size, max_len=integer(0))
 }
 
 
-# max_len <- 50000000
-# poss_n <- 100000
-# bin_size <- 250000
-# poss <- sample(max_len, poss_n)
-# poss <- sort(poss)
-# ranges <- seq(1, max_len, by=bin_size)
-# bin_list <- convert_poss_list_to_bin(poss_list, bin_size)
+# 
 convert_poss_list_to_bin <- function(poss_list, bin_size, max_len=integer(0))
 {
 	data_n <- length(poss_list);
@@ -467,8 +439,6 @@ convert_poss_list_to_bin <- function(poss_list, bin_size, max_len=integer(0))
 	{
 		name <- names(poss_list)[i];
 		print(paste("Converting ", name, " to a poss table...", sep=""));
-		#bin_list[[name]] <- table(cut(poss_list[[i]], breaks=bin_breaks, ordered_result=T));
-
 		if(dim(bin_df)[2] == 0)
 		{
 			bin_df <- data.frame(x_____X_____=as.numeric(table(cut(poss_list[[i]], breaks=bin_breaks, ordered_result=T))));
@@ -541,13 +511,8 @@ convert_df_to_poss_by_ranges <- function(meta_df_list, range_df, max_len, includ
 			}
 			
 			poss <- data[,meta$spos_label];
-			#poss <- c(data[,meta$spos_label], data[,meta$epos_label]);
-			#values <- c(values, values);
-			
-			#bins <- process_poss_vals_to_ranges(data[,meta$spos_label], (data[,meta$spos_label] + 1), values, range_df, max_len);
 			bins <- process_poss_vals_to_ranges(poss, poss+1, values, range_df, max_len);
 			
-			#poss_list[[label]] <- bins / (range_df$END - range_df$START);
 			poss_list[[label]] <- bins;
 		}
 		
@@ -567,8 +532,7 @@ convert_df_to_poss <- function(meta_list_df, merge_duplicates=F)
 
 META_LIST_META_LABEL = "META";
 META_LIST_DATA_LABEL = "DATA";
-# poss_list <- convert_df_to_poss(meta_df_list)
-# merge_duplicate: merge the poss data if two lists have a same name
+# 
 convert_range_df_to_poss <- function(meta_list_df, merge_duplicates=F)
 {
 	source("process_poss.R");
@@ -690,7 +654,6 @@ construct_meta_df <- function(fns_df, chr_id=character(0), quote="", header=T, s
 		chrom_label <- fns_df$chrom_label[i];
 		spos_label <- fns_df$spos_label[i];
 		epos_label <- fns_df$epos_label[i];
-		#chrom_col_val <- fns_df$filtering_value[i];
 		
 		name <- fns_df$name[i];
 		group_label <- fns_df$group_label[i];
@@ -706,7 +669,6 @@ construct_meta_df <- function(fns_df, chr_id=character(0), quote="", header=T, s
 		
 		list_df[["META"]] <- rbind(list_df[["META"]], data.frame(group=group_label, name=name, datatype=data_type, class_label=class_label, class_label_pattern=class_label_pattern, value_label=value_label, chrom_label=chrom_label, spos_label=spos_label, epos_label=epos_label, description=desc, stringsAsFactors=stringsAsFactors));
 		
-		#print(paste("fn=", fn, ", chrom_label=", chrom_label, ", chr_id=", chr_id, sep=""));
 		
 		if(length(chr_id)!=0)
 		{
@@ -717,7 +679,6 @@ construct_meta_df <- function(fns_df, chr_id=character(0), quote="", header=T, s
 
 		if(nrow(df) > 0)
 		{
-			#list_df[[name]] <- df;
 			list_df[["DATA"]][[name]] <- df[sort(df[,spos_label], index.return=T)$ix,];
 		}
 	}
@@ -727,12 +688,8 @@ construct_meta_df <- function(fns_df, chr_id=character(0), quote="", header=T, s
 
 
 # Given a filename, and a given value of a column will be used to filter data of the file
-retrieve_subset <- function(fn, colname, selected_value, quote="", header=T, sep="\t" , comment_char="#", stringsAsFactors=F) {
-#retrieve_subset <- function(fn, colname, selected_value) {
-#	sep="\t";
-#	header=T;
-#	quote="";
-
+retrieve_subset <- function(fn, colname, selected_value, quote="", header=T, sep="\t" , comment_char="#", stringsAsFactors=F)
+{
 	# path to python get_subset script
 	path_to_script <- "/data/bcnskaa/UCSC/annotations/get_subset.py";
 	filename_len <- 20;
@@ -743,7 +700,6 @@ retrieve_subset <- function(fn, colname, selected_value, quote="", header=T, sep
 	
 	
 	cmd <- paste("python3.3", path_to_script, fn, tmp_fn, colname, selected_value, sep=" ");
-	#print("fn:", fn);
 	print(paste("Extracting subset from ", fn, " (colname: ", colname, ", value: ", selected_value, ")...", sep=""));
 	system(cmd);
 	
@@ -831,7 +787,6 @@ batch_files_conversion <- function()
 	}
 	
 	# dhc datasets specific
-	#list_outfiles <- list.files(".", pattern=".bed")
 	cmds <- paste("cp", "dhcHumDerDenAncAllHighFreq.tbl", sub(".bed", ".tbl", list_outfiles));
 	for(cmd in cmds) {
 		print(paste("Running command:", cmd))
