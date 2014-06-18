@@ -339,42 +339,7 @@ class indexed_fasta_seq:
 		else:
 			print("No sequence available, indexing aborted.")
 			
-			
-#	 def build_index(self):
-#		 if(self.fasta_seq != 0):
-#			 seq_len = self.fasta_seq.length()
-#			 max_bound = seq_len - self.index_word_size
-#			 
-#			 print("Generating pattern table of size ", self.index_word_size,"...", end="", sep="")
-#			 self.patterns = self.generate_pattern_table(self.index_word_size)
-#			 self.index_table = [[] for i in range(len(self.patterns))]
-#			 print(len(self.patterns), " patterns generated.", sep="")
-#			 
-#			 step_len = math.ceil(seq_len / 100)
-#			 milestone_len = math.ceil(seq_len / 10)
-#			 cur_progress = 0
-#			 
-#			 print("Scanning: ", max_bound, " windows", sep="")
-#			 print("Building index table:")
-#			  
-#			 print("[", end="")
-#			 for cur_pos in range(max_bound):
-#				 pattern = self.fasta_seq.subseqAt(cur_pos, cur_pos + self.index_word_size)
-#				 idx = self.calculate_pattern_permutation_index(pattern)
-#				 if(idx != self.U_val):
-#					 self.index_table[idx].append(cur_pos)
-#				 
-#				 #print(cur_pos, ".", sep="")
-#				 
-#				 if(cur_pos != 0 and cur_pos % step_len == 0):
-#					 print(".", end="", sep="")
-#				 if(cur_pos != 0 and cur_pos % milestone_len == 0):
-#					 cur_progress += 10
-#					 print("", cur_progress, "%", end="",sep="")
-#			 print("]")
-#		 else:
-#			 print("No sequence available, indexing aborted.")
-
+	
 	def generate_pattern_table(self, pattern_len):
 		return [p for p in itertools.product(self.nucleotide_list, repeat=pattern_len)]
 
