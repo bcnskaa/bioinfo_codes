@@ -35,11 +35,24 @@ import time
 import traceback
 import math
 import glob
-#from os.path import isfile, join
 from os import listdir
 import os
 
 
+
+# Summary:
+#   Parse SQL schema and update UCSC BED data with the schema
+#
+# Input:
+#   1) SQL schema or .TBL file from UCSC genome browser 
+#   2) Corresponding BED file for the schema
+# Output:
+#   An annotated BED file
+#
+# Usage: 
+#   Call this script 
+#   >import sql_to_table
+#   >sql_to_table.append_header_to_bed("cosmicRaw.sql", "cosmicRaw.txt", "cosmicRaw.txt2")
 
 def main(argv):
     #do_scan(argv[0])
@@ -61,14 +74,7 @@ def main(argv):
         print("Usage: SQL(.sql)|TABLE(.tbl) TAB-TXT OUT-TXT")
 
 
-## Call this script 
-#  >import sql_to_table
-##
-## call the function
-#  >sql_to_table.append_header_to_bed("cosmicRaw.sql", "cosmicRaw.txt", "cosmicRaw.txt2")
-
 def read_sql_schema(schema_sql_fn):
-    #print("Reading from ", schema_sql_fn, "...", sep="")
     print("Reading from SQL schema ", schema_sql_fn, "...")
     
     _sql_schema = open(schema_sql_fn).read()
@@ -78,23 +84,28 @@ def read_sql_schema(schema_sql_fn):
 
     state = 0
     columns = []
+    
+    # Looking for specific keywords: KEY, CREATE TABLE, ` 
     for i in range(0, len(_sql_schema)):
+        # Reach the end 
         if _sql_schema[i].startswith('  KEY '):
             state = 2
         
+        # Other scenerio for breaking the loop 
         if state == 1 and not(_sql_schema[i].startswith('  `')):
             state = 2    
         
+        # Break the loop
         if state == 2:
             break
         
+        # Grab the name
         if state == 1:
             spos = len("  `")
             epos = _sql_schema[i].index("`", spos + 1)
-            #print("spos=", spos, ", epos=", epos, " string=", _sql_schema[i][spos:epos], sep="")
             columns.append(_sql_schema[i][spos:epos])
         
-        
+        # Start of a table schema
         if _sql_schema[i].startswith('CREATE TABLE'):
             state = 1
 
@@ -119,10 +130,8 @@ def read_tbl_schema(schema_tbl_fn):
     
     return columns
     
-    
+# 
 def append_header_to_bed(header_schema_fn, data_in_fn, data_out_fn):
-    #print('Reading schema', header_schema_fn)
-    
     if '.sql' in header_schema_fn:
         headers = read_sql_schema(header_schema_fn)
     else:
@@ -135,7 +144,7 @@ def append_header_to_bed(header_schema_fn, data_in_fn, data_out_fn):
 
     headers = "\t".join(headers)
     line_n = 0
-    #with open(data_in_fn, "r", encoding='UTF-8') as f_in, open(data_out_fn, "w") as f_out:
+
     with open(data_in_fn, "r") as f_in, open(data_out_fn, "w") as f_out:
         print('Reading data', data_in_fn, "and export to", data_out_fn)
         f_out.write(headers + "\n")    
@@ -143,25 +152,12 @@ def append_header_to_bed(header_schema_fn, data_in_fn, data_out_fn):
         for line in f_in:
             f_out.write(line)
             line_n += 1
-                         
-#        try:
-#            for line in f_in:
-#                f_out.write(line)
-#                line_n += 1
-#        except UnicodeDecodeError:
-#            continue
 
-#        lines = f_in.readlines()
-#        for line in lines:
-#            f_out.write(line)
-#            line_n += 1
-        
 
+# Scan the directory dir and look for files ended with .sql
 def do_scan(dir):
-    # sql_files = [f for f in os.listdir(dir) if f.endswith(".sql")]
     names = [f.replace('.sql', '') for f in listdir(dir) if f.endswith('.sql')]
     for i in range(len(names)):
-    #for n in names:
         print('processing ', n, '...')
         n = names[i]
         sql_fn = n + '.sql'
@@ -171,11 +167,5 @@ def do_scan(dir):
 
 
 #import sql_to_table
-#from os import listdir
-#names = [f.replace('.sql', '') for f in listdir(".") if f.endswith('.sql')] 
-#for i in range(len(names)):
-#    sql_to_table.append_header_to_bed(names[i]+'.sql', names[i]+'.txt', names[i]+'.txt2')
-
-
 if __name__ == "__main__":
     main(sys.argv[1:])
