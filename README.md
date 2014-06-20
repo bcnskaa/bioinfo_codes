@@ -1,4 +1,4 @@
-python_codes
+Programming
 ============
 
-Python codes for simple bioinformatics tasks
+The scripts or codes in this folder are for demo only.
