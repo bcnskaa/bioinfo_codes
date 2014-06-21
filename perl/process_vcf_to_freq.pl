@@ -33,8 +33,17 @@
 #########################
 
 
+#
+# Usage: 
+# perl process_vcf_to_freq.pl VCF-INFILE VCF-INFO-INFILE > OUT-FILE
+#
+
+
+# 1KGP VCF file
 $fn = shift;
+# 1KGP VCF info file, 
 $fn_info = shift;
+
 
 %POPS = ();
 %INFO = ();
@@ -294,11 +303,12 @@ if(defined IN) {
 	close IN;
 }
 
-
+# Sort based on allele frequency
 sub sort_alele_freq {
 	$ALLELES{$b} <=> $ALLELES{$a};
 }
 
+# Sort based on genotype frequency
 sub sort_genotype_freq {
 	$GENO{$b} <=> $GENO{$a};	
 }
